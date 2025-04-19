@@ -8,7 +8,7 @@ import {logMiddleware} from "./middleware/log.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-
+const cans = ["guinness", "harp", "hophouse", "molson", "pratsky", "rockshore"]
 const app = express();
 
 app.set('trust proxy', process.env.TRUST_PROXY === 'true');
@@ -27,7 +27,7 @@ if (!fs.existsSync(logsDir)) {
 app.use(logMiddleware(logsDir));
 
 app.get("/", (req, res) => {
-    res.render("Index", { can: "pratsky.png" });
+    res.render("Index", { can: getRandomElement(cans)});
 });
 
 const PORT = process.env.PORT || 3030;
@@ -35,3 +35,11 @@ const PORT = process.env.PORT || 3030;
 app.listen(PORT, () => {
     console.log(`isbetterthandubl.in app listening on port ${PORT}`);
 });
+
+function getRandomElement(array) {
+    if (!array || array.length === 0) {
+        return null;
+    }
+    const randomIndex = Math.floor(Math.random() * array.length);
+    return array[randomIndex];
+}
