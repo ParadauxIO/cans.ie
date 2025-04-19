@@ -33,7 +33,7 @@ app.get("/", (req, res) => {
 const PORT = process.env.PORT || 3030;
 
 app.listen(PORT, () => {
-    console.log(`isbetterthandubl.in app listening on port ${PORT}`);
+    console.log(`cans.ie app listening on port ${PORT}`);
 });
 
 function getRandomElement(array) {
