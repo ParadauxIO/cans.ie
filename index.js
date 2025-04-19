@@ -27,7 +27,7 @@ if (!fs.existsSync(logsDir)) {
 app.use(logMiddleware(logsDir));
 
 app.get("/", (req, res) => {
-    res.send("hi")
+    res.render("Index", { can: "pratsky.png" });
 });
 
 const PORT = process.env.PORT || 3030;
