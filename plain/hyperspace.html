@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="hyperspace.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/2.1.3/TweenMax.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.21/lodash.min.js"></script>
+    <script src="hyperspace.js" lang="javascript" defer></script>
+</head>
+
+<body>
+    <img src="pratsky_bg-removebg-preview.png" class="center-image" alt="CANS!!!">
+
+    <audio id="hyperspace-audio">
+        <source src="cans_music.mp3" type="audio/mpeg">
+    </audio>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const audio = document.getElementById('hyperspace-audio');
+            const image = document.querySelector('.center-image');
+
+            // Wait for myJump to be initialized
+            setTimeout(() => {
+                if (!window.myJump) {
+                    console.error('Hyperspace not initialized');
+                    return;
+                }
+
+                // Add click event to the image
+                image.addEventListener('mousedown', (e) => {
+                    // Prevent event bubbling to avoid double triggering
+                    e.stopPropagation();
+
+                    // Play audio
+                    audio.currentTime = 0;
+                    audio.play();
+
+                    // Trigger hyperspace initiate
+                    window.myJump.initiate();
+                });
+
+                // Complete the hyperspace jump on mouse up
+                image.addEventListener('mouseup', (e) => {
+                    e.stopPropagation();
+                    window.myJump.enter();
+                });
+
+                // Touch support for mobile
+                image.addEventListener('touchstart', (e) => {
+                    e.stopPropagation();
+                    audio.currentTime = 0;
+                    audio.play();
+                    window.myJump.initiate();
+                });
+
+                image.addEventListener('touchend', (e) => {
+                    e.stopPropagation();
+                    window.myJump.enter();
+                });
+            }, 500); // Short delay to ensure everything is loaded
+        });
+    </script>
+</body>
+</html>
