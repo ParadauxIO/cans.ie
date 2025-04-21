@@ -20,3 +20,32 @@ canvas {
     transform: translate(-50%, -50%);
     z-index: 10;
 }
+
+.site-footer {
+    font-family: "Comic Sans MS", cursive, sans-serif;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 10px 15px;
+    background-color: rgba(0, 0, 0, 0.1);
+    text-align: center;
+    z-index: 20;
+    font-size: 12px;
+}
+
+.site-footer a {
+    color: #fff;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.site-footer a:hover {
+    color: #ccc;
+    text-decoration: underline;
+}
+
+.separator {
+    color: #555;
+    margin: 0 10px;
+}
