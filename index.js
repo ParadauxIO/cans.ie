@@ -5,6 +5,7 @@ import { fileURLToPath } from "url";
 import ejs from "ejs";
 import fs from "fs";
 import {logMiddleware} from "./middleware/log.js";
+import {createVisit} from "./middleware/visit.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -25,6 +26,9 @@ if (!fs.existsSync(logsDir)) {
 
 // Logging middleware
 app.use(logMiddleware(logsDir));
+
+// Increment the visitor count
+app.use(createVisit(process.env.PARADAUX_API_BASE_URL, process.env.PARADAUX_API_SECRET, "cans.ie"));
 
 app.get("/", (req, res) => {
     res.render("Index", { can: getRandomElement(cans)});
