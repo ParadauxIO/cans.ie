@@ -31,7 +31,6 @@ app.use(logMiddleware(logsDir));
 app.use(createVisit(process.env.PARADAUX_API_BASE_URL, process.env.PARADAUX_API_SECRET, "cans.ie"));
 
 app.get("/", (req, res) => {
-    console.log(req.headers)
     res.render("Index", { can: getRandomElement(cans)});
 });
 
