@@ -9,7 +9,7 @@ import {createVisit} from "./middleware/visit.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const cans = ["guinness", "harp", "hophouse", "molson", "pratsky", "rockshore"]
+const cans = ["guinness", "harp", "hophouse", "molson", "pratsky", "rockshore", "buzzball"]
 const app = express();
 
 app.set('trust proxy', process.env.TRUST_PROXY === 'true');
