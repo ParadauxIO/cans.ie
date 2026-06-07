@@ -18,6 +18,9 @@
     <title>cans</title>
 
     <script defer src="https://umami.paradaux.io/script.js" data-website-id="2bed27a8-0e49-4bd1-a905-67924b11b5c4"></script>
+    <!-- Grafana Faro RUM (web-vitals + JS errors) → faro.paradaux.io -->
+    <script defer src="https://cdn.jsdelivr.net/npm/@grafana/faro-web-sdk@2.7.1/dist/bundle/faro-web-sdk.iife.js" crossorigin="anonymous"></script>
+    <script>(function w(){var F=window.GrafanaFaroWebSdk;if(!F)return setTimeout(w,50);F.initializeFaro({url:"https://faro.paradaux.io/collect",app:{name:"cans-ie",environment:"production"},instrumentations:F.getWebInstrumentations()});})();</script>
 </head>
 
 <body>
