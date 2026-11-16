@@ -1,57 +1,33 @@
-name: Build and Push Docker Image to Harbor
-
+name: Tested digest release
 on:
+  pull_request:
   push:
-    branches:
-      - main
-      - develop
-
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
 jobs:
-  build-and-push:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout source code
-        uses: actions/checkout@v4
-
-      - name: Compute tags
-        id: tags
-        run: |
-          # Env-prefixed immutable tag — Argo CD Image Updater watches
-          # `<env>-sha-<short>` per overlay. Prefix MUST match the kustomize
-          # overlay directory name (development / production). Mutable tag
-          # kept for transition / manual rollbacks.
-          SHORT_SHA=${GITHUB_SHA::7}
-          if [ "${{ github.ref_name }}" == "main" ]; then
-            ENV_NAME=production
-            MUTABLE=prod
-          elif [ "${{ github.ref_name }}" == "develop" ]; then
-            ENV_NAME=development
-            MUTABLE=latest
-          else
-            echo "Unsupported branch: ${{ github.ref_name }}"
-            exit 1
-          fi
-          echo "SHA_TAG=${ENV_NAME}-sha-${SHORT_SHA}" >> "$GITHUB_OUTPUT"
-          echo "MUTABLE_TAG=${MUTABLE}" >> "$GITHUB_OUTPUT"
-
-      - name: Log in to Harbor registry
-        uses: docker/login-action@v3
-        with:
-          registry: ${{ secrets.HARBOR_REGISTRY }}
-          username: ${{ secrets.HARBOR_USERNAME }}
-          password: ${{ secrets.HARBOR_PASSWORD }}
-
-      - name: Build Docker image
-        run: |
-          IMAGE=${{ secrets.HARBOR_REGISTRY }}/paradaux-public/cans
-          docker build \
-            -t "${IMAGE}:${{ steps.tags.outputs.SHA_TAG }}" \
-            -t "${IMAGE}:${{ steps.tags.outputs.MUTABLE_TAG }}" \
-            .
-
-      - name: Push Docker image
-        run: |
-          IMAGE=${{ secrets.HARBOR_REGISTRY }}/paradaux-public/cans
-          docker push "${IMAGE}:${{ steps.tags.outputs.SHA_TAG }}"
-          docker push "${IMAGE}:${{ steps.tags.outputs.MUTABLE_TAG }}"
+  image:
+    # Pin the public workflow library; private release tooling is pinned separately.
+    uses: ParadauxIO/application-ci/.github/workflows/reusable-image.yaml@33f0dcb3f6f7a7eaad4671758f1af84e9614550d
+    with:
+      stack: node
+      version: '22'
+      test-command: npm ci && npm test
+      image: harbor.paradaux.io/paradaux-public/cans
+      publish: ${{ github.event_name != 'pull_request' }}
+    secrets:
+      HARBOR_USERNAME: ${{ secrets.HARBOR_USERNAME }}
+      HARBOR_PASSWORD: ${{ secrets.HARBOR_PASSWORD }}
+  promote:
+    needs: image
+    if: needs.image.outputs.digest != ''
+    uses: ParadauxIO/application-ci/.github/workflows/reusable-promote.yaml@33f0dcb3f6f7a7eaad4671758f1af84e9614550d
+    with:
+      app: cans
+      digest: ${{ needs.image.outputs.digest }}
+      gitops-ref: 12e523b8fe732af208983ed92bb13c87bf05e870
+    secrets:
+      GITOPS_APP_CLIENT_ID: ${{ secrets.GITOPS_APP_CLIENT_ID }}
+      GITOPS_APP_PRIVATE_KEY: ${{ secrets.GITOPS_APP_PRIVATE_KEY }}
+      DEVELOPMENT_KUBECONFIG: ${{ secrets.DEVELOPMENT_KUBECONFIG }}
